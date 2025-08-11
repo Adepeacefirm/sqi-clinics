@@ -34,7 +34,9 @@ router
   .route("/cancel-user-appointment")
   .patch(isUserLoggedIn, cancelAppointmentByUser);
 
-  roter.route("/confirm-appointment").patch(isUserLoggedIn, confirmAppointmentByUser)
+router
+  .route("/confirm-appointment")
+  .patch(isUserLoggedIn, confirmAppointmentByUser);
 
 router.route("/:id").get(getSingleAppointment);
 
