@@ -3,6 +3,7 @@ const appointmentModel = require("../models/appointmentModel");
 
 const initiatePayment = async (req, res) => {
   const { email, name } = req.body;
+  const { appointmentId } = req.params;
 
   const data = {
     tx_ref: `tx-${Date.now()}`,
@@ -31,7 +32,7 @@ const initiatePayment = async (req, res) => {
       }
     );
 
-    await appointmentModel.findByIdAndUpdate(appId, {
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
       paymentRef: data.tx_ref,
       status: "Pending Payment",
     });
@@ -172,27 +173,28 @@ const payConfirm = async (req, res) => {
   ) {
     const txRef = payload.tx_ref;
     const verifyRes = await axios.get(
-        `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`
-          }
-        }
-      );
-
-      const verification = verifyRes.data;
-      if (verification.status === "success" && verification.data.status === "successful") {
-        console.log("✅ Payment verified for:", txRef);
-
-        // Update appointment status
-        await appointmentModel.findOneAndUpdate(
-          { paymentRef: txRef },
-          { status: "Confirmed" }
-        );
-
+      `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+        },
       }
+    );
+
+    const verification = verifyRes.data;
+    if (
+      verification.status === "success" &&
+      verification.data.status === "successful"
+    ) {
+      console.log("✅ Payment verified for:", txRef);
+
+      // Update appointment status
+      await appointmentModel.findOneAndUpdate(
+        { paymentRef: txRef },
+        { status: "Confirmed" }
+      );
     }
-  
+  }
 
   res.status(200).send("Webhook received successfully");
 };
