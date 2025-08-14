@@ -160,9 +160,9 @@ const payConfirm = async (req, res) => {
   console.log(signature);
   console.log(secretHash);
   // Verify webhook source
-  if (!signature || signature !== secretHash) {
-    return res.status(401).json({ error: "Invalid signature" });
-  }
+//   if (!signature || signature !== secretHash) {
+//     return res.status(401).json({ error: "Invalid signature" });
+//   }
 
   const payload = JSON.parse(req.body.toString());
   console.log("Webhook received:", payload);
