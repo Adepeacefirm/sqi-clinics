@@ -168,34 +168,18 @@ const payConfirm = async (req, res) => {
   console.log("Webhook received:", payload);
 
   if (
-    payload.status === "successful" &&
-    payload.currency === "USD" &&
-    payload.amount === 50
+    payload.data.status === "successful" &&
+    payload.data.currency === "USD" &&
+    payload.data.amount === 50
   ) {
-    const txRef = payload.tx_ref;
-    const verifyRes = await axios.get(
-      `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
-        },
-      }
-    );
-
-    const verification = verifyRes.data;
-    if (
-      verification.status === "success" &&
-      verification.data.status === "successful"
-    ) {
-      console.log("✅ Payment verified for:", txRef);
-
+    const txRef = payload.data.tx_ref;
       // Update appointment status
       await appointmentModel.findOneAndUpdate(
         { paymentRef: txRef },
         { status: "Confirmed" }
       );
     }
-  }
+  
 
   res.status(200).send("Webhook received successfully");
 };
