@@ -157,7 +157,8 @@ const flutterwaveWebhook = async (req, res) => {
 const payConfirm = async (req, res) => {
   const secretHash = process.env.FLW_WEBHOOK_SECRET; // set this in your Flutterwave dashboard
   const signature = req.headers["verif-hash"];
-
+  console.log(signature);
+  console.log(secretHash);
   // Verify webhook source
   if (!signature || signature !== secretHash) {
     return res.status(401).json({ error: "Invalid signature" });
