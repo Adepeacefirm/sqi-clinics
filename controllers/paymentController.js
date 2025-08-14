@@ -164,7 +164,7 @@ const payConfirm = async (req, res) => {
 //     return res.status(401).json({ error: "Invalid signature" });
 //   }
 
-  const payload = JSON.parse(req.body.toString());
+  const payload = req.body
   console.log("Webhook received:", payload);
 
   if (
